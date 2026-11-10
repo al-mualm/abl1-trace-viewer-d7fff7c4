@@ -4,75 +4,67 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <title>Protected ABL1 AB1 trace comparison</title>
+  <title>Protected ABL1 reference-to-sample chromatogram viewer</title>
   <style>
-    :root{color-scheme:light;--ink:#17365d;--muted:#475569;--line:#cbd5e1;--purple:#7c3aed}
+    :root{color-scheme:light;--ink:#17365d;--muted:#475569;--line:#cbd5e1;--purple:#7c3aed;--blue:#2563eb}
     *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;color:var(--ink);background:#f8fafc}
-    .shell{max-width:1500px;margin:0 auto;padding:18px}h1{margin:0 0 4px}.sub{color:var(--muted);margin-bottom:12px}
+    .shell{max-width:1500px;margin:0 auto;padding:18px}h1{margin:0 0 4px}.sub{color:var(--muted);margin-bottom:12px;line-height:1.45}
     #lock{max-width:520px;margin:12vh auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:0 16px 50px #0f172a18}
-    #lock h1{font-size:26px}.lock-note{color:var(--muted);line-height:1.5;margin:10px 0 18px}
-    .password-row{display:flex;gap:8px}#password{flex:1;padding:11px;border:1px solid #94a3b8;border-radius:8px;font-size:16px}
-    #unlock{border:0;background:var(--purple);color:white;padding:0 18px;border-radius:8px;font-weight:700;cursor:pointer}
+    #lock h1{font-size:26px}.lock-note{color:var(--muted);line-height:1.5;margin:10px 0 18px}.password-row{display:flex;gap:8px}
+    #password{flex:1;padding:11px;border:1px solid #94a3b8;border-radius:8px;font-size:16px}#unlock{border:0;background:var(--purple);color:white;padding:0 18px;border-radius:8px;font-weight:700;cursor:pointer}
     #error{min-height:20px;color:#b91c1c;margin-top:10px;font-weight:700}.hidden{display:none!important}
     .controls{position:sticky;top:0;z-index:10;background:white;border:1px solid var(--line);border-radius:10px;padding:10px;box-shadow:0 2px 8px #0001}
-    label{font-weight:700;margin-right:8px}select,input{padding:5px;margin-right:12px}.presets{margin-top:8px}.presets button{margin:2px;padding:5px 8px;border:1px solid #94a3b8;border-radius:6px;background:#fff;cursor:pointer}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}.panel{background:white;border:1px solid var(--line);border-radius:10px;padding:10px}
-    .title{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:18px}.badge{font-size:12px;background:var(--purple);color:white;border-radius:10px;padding:3px 7px}.original{background:#475569}
-    .info{color:#334155;margin:4px 0 7px;font-family:Menlo,Consolas,monospace;font-size:13px;overflow-wrap:anywhere}canvas{width:100%;height:280px;border:1px solid #e2e8f0;background:white}
-    .legend{font-size:13px;color:var(--muted);margin-top:5px}.loading{font-weight:700;color:var(--purple)}
-    @media(max-width:700px){.shell{padding:10px}.controls label{display:block;margin-top:7px}.controls input,.controls select{max-width:100%}canvas{height:220px}.password-row{flex-direction:column}#unlock{padding:11px}}
+    label{font-weight:700;margin-right:8px}select,input{padding:6px;margin-right:12px}.presets{margin-top:8px}.presets button{margin:2px;padding:6px 9px;border:1px solid #94a3b8;border-radius:6px;background:#fff;cursor:pointer}.presets button:hover{border-color:var(--blue);color:var(--blue)}
+    .mutation{margin-top:9px;padding:8px 10px;border-radius:8px;background:#eff6ff;color:#1e3a8a;font-weight:800}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}.panel{position:relative;background:white;border:1px solid var(--line);border-radius:10px;padding:10px 10px 10px 48px}
+    .panel-letter{position:absolute;left:15px;top:15px;font-size:24px;font-weight:900;color:#111827}.title{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:18px}.badge{font-size:12px;background:var(--purple);color:white;border-radius:10px;padding:3px 7px}.reference{background:#0f766e}.sample{background:#475569}
+    .info{color:#334155;margin:4px 0 7px;font-family:Menlo,Consolas,monospace;font-size:13px;overflow-wrap:anywhere}canvas{width:100%;height:290px;border:1px solid #e2e8f0;background:white}.legend{font-size:13px;color:var(--muted);margin-top:5px}.loading{font-weight:700;color:var(--purple)}
+    @media(max-width:700px){.shell{padding:10px}.controls label{display:block;margin-top:7px}.controls input,.controls select{max-width:100%}.panel{padding-left:34px}.panel-letter{left:9px}canvas{height:230px}.password-row{flex-direction:column}#unlock{padding:11px}}
   </style>
 </head>
 <body>
   <section id="lock">
     <h1>Protected ABL1 AB1 viewer</h1>
-    <div class="lock-note">The AB1 trace data are encrypted. Enter the access password supplied separately. The password is never uploaded or stored by this page.</div>
+    <div class="lock-note">The AB1 trace data are encrypted. Enter the access password supplied separately.</div>
     <div class="password-row"><input id="password" type="password" autocomplete="off" placeholder="Access password"><button id="unlock">Unlock</button></div>
     <div id="error"></div>
   </section>
   <main id="app" class="shell hidden">
-    <h1>ABL1 raw AB1 chromatogram comparison</h1>
-    <div class="sub">Before = student's original AB1 files. After = the nine repeat traces substituted. Curves and Phred values come directly from the AB1 files.</div>
-    <div id="loading" class="loading">Decrypting AB1 trace channels...</div>
+    <h1>ABL1 reference/control versus sample chromatogram</h1>
+    <div class="sub">Panel A is the supplied reference/control AB1 chromatogram (the file supplied as “refrence”, identical to A32) aligned to the ABL1 NCBI reference. Panel B is the selected sample aligned to the same reference-coordinate window. The arrow marks the selected nucleotide in both panels.</div>
+    <div id="loading" class="loading">Decrypting AB1 trace channels…</div>
     <div class="controls">
       <label>Sample</label><select id="sample"></select>
       <label>Gene-only position</label><input id="position" type="number" min="158988" max="160159" value="159305">
       <label>Amplicon offset</label><input id="offset" type="number" min="0" max="1171" value="317">
-      <input id="slider" type="range" min="158988" max="160159" value="159305" style="width:320px">
-      <div class="presets"><b>Jump to:</b>
-        <button data-offset="252">client 252</button><button data-offset="315">client 315</button><button data-offset="528">client 528</button>
-        <button data-offset="660">client 660</button><button data-offset="685">client 685</button><button data-offset="769">client 769</button>
-        <button data-offset="866">true T315I</button><button data-offset="312">signal 312</button><button data-offset="317">signal 317</button><button data-offset="666">rs2070997</button>
+      <input id="slider" type="range" min="158988" max="160159" value="159305" style="width:300px">
+      <div class="presets"><b>Validated trace examples:</b>
+        <button data-sample="A4" data-offset="312">A4 · T&gt;C · 312</button><button data-sample="A20" data-offset="317">A20 · C&gt;T · 317</button><button data-sample="A22" data-offset="317">A22 · C&gt;T · 317</button><button data-sample="A15" data-offset="666">A15 · A&gt;G · 666</button><button data-sample="A22" data-offset="666">A22 · A&gt;G · 666</button>
       </div>
+      <div id="mutation" class="mutation">Reference and sample are being compared…</div>
     </div>
     <div class="grid">
-      <div class="panel"><div class="title"><span>Before repeat substitution</span><span class="badge original">student original</span></div><div id="beforeInfo" class="info"></div><canvas id="beforeCanvas" width="1500" height="300"></canvas><div class="legend">A green - C blue - G black - T red - purple line = selected reference position - quality bar beneath each called base</div></div>
-      <div class="panel"><div class="title"><span>After repeat substitution</span><span id="afterBadge" class="badge">selected trace</span></div><div id="afterInfo" class="info"></div><canvas id="afterCanvas" width="1500" height="300"></canvas><div class="legend">The trace changes only for A6, A7, A12, A14, A17, A18, A21, A25, and A27.</div></div>
+      <div class="panel"><div class="panel-letter">A</div><div class="title"><span>Reference/control chromatogram</span><span class="badge reference">supplied reference AB1</span></div><div id="referenceInfo" class="info"></div><canvas id="referenceCanvas" width="1500" height="320"></canvas></div>
+      <div class="panel"><div class="panel-letter">B</div><div class="title"><span>Selected sample chromatogram</span><span id="sampleBadge" class="badge sample">sample AB1</span></div><div id="sampleInfo" class="info"></div><canvas id="sampleCanvas" width="1500" height="320"></canvas></div>
     </div>
+    <div class="legend">A green · C blue · G black · T red · black arrow = selected ABL1 reference position. Both panels use the same NCBI-aligned nucleotide columns.</div>
   </main>
 <script>
-const START=158988,COLORS={A:'#22a447',C:'#2474c6',G:'#111827',T:'#dc2626'};let before,after;
+const START=158988,END=160159,REFSID='A32',FLANK=11,COLORS={A:'#22a447',C:'#2474c6',G:'#111827',T:'#dc2626'};let data;
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-async function decryptFile(password,spec){
-  const keyMaterial=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
-  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(spec.salt),iterations:spec.iterations,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},false,['decrypt']);
-  const encrypted=await fetch(spec.path,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Encrypted data unavailable');return r.arrayBuffer()});
-  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(spec.iv),tagLength:128},key,encrypted);
-  return JSON.parse(new TextDecoder().decode(plain));
-}
-async function unlock(){
-  const password=document.getElementById('password').value,error=document.getElementById('error'),button=document.getElementById('unlock');
-  if(!password){error.textContent='Enter the access password.';return}button.disabled=true;button.textContent='Decrypting...';error.textContent='';
-  try{const meta=await fetch('crypto_meta.json',{cache:'no-store'}).then(r=>r.json());[before,after]=await Promise.all([decryptFile(password,meta.files.before),decryptFile(password,meta.files.after)]);document.getElementById('lock').classList.add('hidden');document.getElementById('app').classList.remove('hidden');initialize()}
-  catch(e){error.textContent='Incorrect password or encrypted data could not be opened.';button.disabled=false;button.textContent='Unlock'}
-}
+async function decryptFile(password,spec){const keyMaterial=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(spec.salt),iterations:spec.iterations,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},false,['decrypt']);const encrypted=await fetch(spec.path,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Encrypted data unavailable');return r.arrayBuffer()});const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(spec.iv),tagLength:128},key,encrypted);return JSON.parse(new TextDecoder().decode(plain))}
+async function unlock(){const password=document.getElementById('password').value,error=document.getElementById('error'),button=document.getElementById('unlock');if(!password){error.textContent='Enter the access password.';return}button.disabled=true;button.textContent='Decrypting…';error.textContent='';try{const meta=await fetch('crypto_meta.json',{cache:'no-store'}).then(r=>r.json());data=await decryptFile(password,meta.files.after);document.getElementById('lock').classList.add('hidden');document.getElementById('app').classList.remove('hidden');initialize()}catch(e){error.textContent='Incorrect password or encrypted data could not be opened.';button.disabled=false;button.textContent='Unlock'}}
 document.getElementById('unlock').onclick=unlock;document.getElementById('password').onkeydown=e=>{if(e.key==='Enter')unlock()};
-function initialize(){const sel=document.getElementById('sample');Object.keys(after.samples).forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o)});sel.value='A25';document.getElementById('loading').style.display='none';bind();draw()}
-function bind(){const p=document.getElementById('position'),o=document.getElementById('offset'),sl=document.getElementById('slider');document.getElementById('sample').onchange=draw;p.oninput=()=>{const v=Math.max(START,Math.min(160159,+p.value));o.value=v-START;sl.value=v;draw()};o.oninput=()=>{const v=Math.max(0,Math.min(1171,+o.value));p.value=START+v;sl.value=START+v;draw()};sl.oninput=()=>{p.value=sl.value;o.value=+sl.value-START;draw()};document.querySelectorAll('[data-offset]').forEach(b=>b.onclick=()=>{o.value=b.dataset.offset;o.dispatchEvent(new Event('input'))})}
-function qColor(q){return q>=30?'#16a34a':q>=20?'#f59e0b':'#ef4444'}
-function drawTrace(dataset,sid,pos,canvas,infoEl){const s=dataset.samples[sid],ref=dataset.reference[pos-START],idx=s.map[pos-START],ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);if(idx<1||idx>=s.plocs.length-1){ctx.fillStyle='#64748b';ctx.font='22px Arial';ctx.fillText('No aligned AB1 trace coverage at this reference position',35,145);infoEl.textContent=`${sid} | ${s.source} | ${s.file} | reference ${ref} | NO COVERAGE`;return}const flank=13,i0=Math.max(1,idx-flank),i1=Math.min(s.plocs.length-2,idx+flank),x0=s.plocs[i0],x1=s.plocs[i1];let max=1;for(const b of ['A','C','G','T'])for(let x=x0;x<=x1;x++)max=Math.max(max,s.channels[b][x]||0);const left=35,right=canvas.width-25,top=45,bottom=245,sx=x=>left+(x-x0)/(x1-x0)*(right-left),sy=v=>bottom-v/max*(bottom-top);ctx.strokeStyle='#e2e8f0';ctx.beginPath();ctx.moveTo(left,bottom);ctx.lineTo(right,bottom);ctx.stroke();for(const b of ['A','C','G','T']){ctx.strokeStyle=COLORS[b];ctx.lineWidth=2;ctx.beginPath();for(let x=x0;x<=x1;x++){const X=sx(x),Y=sy(s.channels[b][x]||0);if(x===x0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y)}ctx.stroke()}ctx.font='bold 15px Menlo';ctx.textAlign='center';for(let i=i0;i<=i1;i++){const X=sx(s.plocs[i]),b=s.bases[i],q=s.qualities[i];ctx.fillStyle=COLORS[b]||'#64748b';ctx.fillText(b,X,22);ctx.fillStyle=qColor(q);ctx.fillRect(X-3,255,6,Math.min(35,q)/2)}const tx=sx(s.plocs[idx]);ctx.strokeStyle='#7c3aed';ctx.lineWidth=3;ctx.setLineDash([7,5]);ctx.beginPath();ctx.moveTo(tx,28);ctx.lineTo(tx,250);ctx.stroke();ctx.setLineDash([]);const base=s.bases[idx],q=s.qualities[idx];infoEl.textContent=`${sid} | ${s.source} | ${s.file} | position ${pos} (offset ${pos-START}) | reference ${ref} | called ${base} | Phred Q${q}`}
-function draw(){if(!before)return;const sid=document.getElementById('sample').value,pos=+document.getElementById('position').value;drawTrace(before,sid,pos,document.getElementById('beforeCanvas'),document.getElementById('beforeInfo'));drawTrace(after,sid,pos,document.getElementById('afterCanvas'),document.getElementById('afterInfo'));const src=after.samples[sid].source,b=document.getElementById('afterBadge');b.textContent=src==='repeat'?'repeat substituted':'same original trace';b.className='badge '+(src==='repeat'?'':'original')}
+function sampleNumber(s){return Number(s.replace(/^A/,''))}
+function initialize(){const sel=document.getElementById('sample');Object.keys(data.samples).sort((a,b)=>sampleNumber(a)-sampleNumber(b)).filter(s=>s!==REFSID).forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o)});sel.value='A22';document.getElementById('loading').style.display='none';bind();draw()}
+function bind(){const p=document.getElementById('position'),o=document.getElementById('offset'),sl=document.getElementById('slider');document.getElementById('sample').onchange=draw;p.oninput=()=>{const v=Math.max(START,Math.min(END,+p.value));o.value=v-START;sl.value=v;draw()};o.oninput=()=>{const v=Math.max(0,Math.min(END-START,+o.value));p.value=START+v;sl.value=START+v;draw()};sl.oninput=()=>{p.value=sl.value;o.value=+sl.value-START;draw()};document.querySelectorAll('[data-offset]').forEach(b=>b.onclick=()=>{document.getElementById('sample').value=b.dataset.sample;o.value=b.dataset.offset;o.dispatchEvent(new Event('input'))})}
+function mappedIndex(sample,pos){return pos<START||pos>END?-1:sample.map[pos-START]}
+function targetPeaks(sample,pos){const i=mappedIndex(sample,pos);if(i<1||i>=sample.plocs.length-1)return null;const center=sample.plocs[i],left=Math.floor((sample.plocs[i-1]+center)/2),right=Math.floor((center+sample.plocs[i+1])/2),peaks={};for(const b of ['A','C','G','T']){let value=-1,scan=center;for(let x=left;x<=right;x++){const v=sample.channels[b][x]||0;if(v>value){value=v;scan=x}}peaks[b]={value,scan}}return {i,peaks,ranked:Object.keys(peaks).sort((a,b)=>peaks[b].value-peaks[a].value)}}
+function classify(sample,pos){const ref=data.reference[pos-START],p=targetPeaks(sample,pos);if(!p)return {text:'No aligned trace coverage',base:'-'};const [primary,secondary,third]=p.ranked,ratio=p.peaks[secondary].value/Math.max(1,p.peaks[primary].value),thirdRatio=p.peaks[third].value/Math.max(1,p.peaks[primary].value),distance=Math.abs(p.peaks[primary].scan-p.peaks[secondary].scan),called=sample.bases[p.i],q=sample.qualities[p.i];if(ratio>=.30&&thirdRatio<=.20&&distance<=2&&(primary===ref||secondary===ref)){const alt=primary===ref?secondary:primary;return {text:`${ref}>${alt} mixed signal`,base:`${ref}/${alt}`,q}}if(primary!==ref&&called===primary)return {text:`${ref}>${primary}`,base:primary,q};if(primary===ref)return {text:`Reference ${ref} (no change)`,base:ref,q};return {text:'Unresolved trace signal',base:called,q}}
+function xForPosition(pos,start,end,left,right){return left+(pos-start)/(end-start)*(right-left)}
+function drawArrow(ctx,x){ctx.strokeStyle='#111827';ctx.fillStyle='#111827';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,34);ctx.lineTo(x,62);ctx.stroke();ctx.beginPath();ctx.moveTo(x,70);ctx.lineTo(x-7,58);ctx.lineTo(x+7,58);ctx.closePath();ctx.fill()}
+function drawAligned(sample,sid,pos,canvas,infoEl,role){const ctx=canvas.getContext('2d'),start=Math.max(START,pos-FLANK),end=Math.min(END,pos+FLANK),left=42,right=canvas.width-28,traceTop=82,traceBottom=270;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);const target=mappedIndex(sample,pos);if(target<1){ctx.fillStyle='#64748b';ctx.font='22px Arial';ctx.fillText('No aligned AB1 trace coverage at this position',55,160);infoEl.textContent=`${role} | ${sid} | no aligned coverage`;return}let max=1;for(let p=start;p<end;p++){const i=mappedIndex(sample,p),j=mappedIndex(sample,p+1);if(i<0||j<0||j<i||j-i>2)continue;for(const b of ['A','C','G','T'])for(let scan=sample.plocs[i];scan<=sample.plocs[j];scan++)max=Math.max(max,sample.channels[b][scan]||0)}const y=v=>traceBottom-v/max*(traceBottom-traceTop);ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,traceBottom);ctx.lineTo(right,traceBottom);ctx.stroke();for(const b of ['A','C','G','T']){ctx.strokeStyle=COLORS[b];ctx.lineWidth=2.1;ctx.beginPath();let started=false;for(let p=start;p<end;p++){const i=mappedIndex(sample,p),j=mappedIndex(sample,p+1);if(i<0||j<0||j<i||j-i>2){started=false;continue}const s0=sample.plocs[i],s1=sample.plocs[j],x0=xForPosition(p,start,end,left,right),x1=xForPosition(p+1,start,end,left,right);for(let scan=s0;scan<=s1;scan++){const X=x0+(scan-s0)/Math.max(1,s1-s0)*(x1-x0),Y=y(sample.channels[b][scan]||0);if(!started){ctx.moveTo(X,Y);started=true}else ctx.lineTo(X,Y)}}ctx.stroke()}ctx.font='bold 17px Menlo';ctx.textAlign='center';for(let p=start;p<=end;p++){const i=mappedIndex(sample,p);if(i<0)continue;const base=sample.bases[i],X=xForPosition(p,start,end,left,right);ctx.fillStyle=COLORS[base]||'#64748b';ctx.fillText(base,X,24)}const tx=xForPosition(pos,start,end,left,right);drawArrow(ctx,tx);const c=classify(sample,pos);infoEl.textContent=`${role} | ${sid} | ${sample.file} | gene-only ${pos} | offset ${pos-START} | NCBI reference ${data.reference[pos-START]} | trace ${c.base}${c.q===undefined?'':` | Phred Q${c.q}`}`}
+function draw(){if(!data)return;const sid=document.getElementById('sample').value,pos=+document.getElementById('position').value,reference=data.samples[REFSID],sample=data.samples[sid];drawAligned(reference,REFSID,pos,document.getElementById('referenceCanvas'),document.getElementById('referenceInfo'),'Reference/control');drawAligned(sample,sid,pos,document.getElementById('sampleCanvas'),document.getElementById('sampleInfo'),'Selected sample');const ref=data.reference[pos-START],result=classify(sample,pos);document.getElementById('mutation').textContent=`Selected comparison: ${sid} at offset ${pos-START} — ${result.text} (NCBI reference base ${ref})`;const badge=document.getElementById('sampleBadge');badge.textContent=sample.source==='repeat'?'repeat AB1 selected':'original AB1 selected'}
 </script>
 </body>
 </html>
-
